@@ -1,0 +1,68 @@
+.forms {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+form {
+    max-width: 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+#gamePlayerData {
+    padding: 20px 50px;
+}
+
+#grids {
+    display: flex;
+    justify-content: space-around;
+}
+
+#heading, #table {
+    display: flex;
+    justify-content: center;
+}
+
+th, td {
+    text-align: center;
+    min-width: 18px;
+    min-height: 18px;
+}
+
+.ships td, .salvoes td {
+    background-color: LightBlue;
+    font-weight: bold;
+}
+
+.occupied {
+    background-color: DarkGreen;
+}
+
+.ships .shot:not(.occupied) {
+    background-color: SteelBlue;
+    color: white;
+}
+
+.shot.occupied, .salvoes .shot {
+    background-color: OrangeRed;
+}
+
+#table td:first-of-type {
+    font-weight: bold;
+    text-align: left;
+}
+
+#table td:nth-of-type(2) {
+    font-weight: bold;
+}
+
+#table th, #table td {
+    padding: 0 5px;
+    min-width: 35px;
+}

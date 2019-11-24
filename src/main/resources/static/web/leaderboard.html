@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salvo leaderboard</title>
+    <link rel="stylesheet" href="styles/salvo.css">
+</head>
+<body>
+    <header id="authentication">
+        <form onsubmit="return false">
+            <label>E-mail: <input type="text" name="e-mail"></label>
+            <label>Password: <input type="password" name="password"></label>
+            <input type="submit" value="Log in" id="login">
+        </form>
+
+        <form onsubmit="return false">
+            <button id="logout">Log out</button>
+        </form>
+    </header>
+
+    <section id="heading"></section>
+    <section id="table"></section>
+
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="scripts/leaderboard.js"></script>
+</body>
+</html>
