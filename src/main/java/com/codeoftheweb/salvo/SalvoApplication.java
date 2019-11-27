@@ -76,6 +76,8 @@ public class SalvoApplication extends SpringBootServletInitializer {
                     playerRepository.save(player2);
                 }
 /*                    game.addScore(new Score(gamePlayer2));*/
+                if(player1 != null && player2 != null)
+                    game.setStatus(Game.Status.ONGOING);
                 gameRepository.save(game);
             }
 

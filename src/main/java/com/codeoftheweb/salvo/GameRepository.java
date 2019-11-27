@@ -10,7 +10,7 @@ import java.util.List;
 public interface GameRepository extends JpaRepository<Game, Long> {
 
     List<Game> findByCreationDate(Date creationDate);
-    List<Game> findByFinished(boolean finished);
+    List<Game> findByStatus(Game.Status status);
     List<Game> findByFinishDate(Date finishDate);
 
 }

@@ -97,9 +97,10 @@ public class SalvoController {
         dto.put("description", game.toString());
         dto.put("created_on", game.getCreationDate());
         dto.put("gamePlayers", game.getGamePlayerSet().stream().map(this::createGamePlayerDTO));
-        dto.put("finished", game.isFinished());
+        dto.put("status", game.getStatus().status());
         dto.put("finished_on", game.getFinishDate());
-        dto.put("gameResult", game.getResult());
+        dto.put("winner", game.getWinner() != null ? createPlayerDTO(game.getWinner()) : null);
+        dto.put("result", game.getResult());
         return dto;
     }
 

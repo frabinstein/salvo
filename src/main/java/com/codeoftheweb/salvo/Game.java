@@ -21,8 +21,17 @@ public class Game {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
     final private Date creationDate;
-    private boolean finished = false;
+
+    public enum Status {
+        OPEN("open"), NOT_STARTED("not started"), ONGOING("ongoing"), FINISHED("finished");
+        private final String status;
+        Status(String status) { this.status = status;}
+        public String status() {return this.status; }
+    }
+    private Status status;
+
     private Date finishDate;
+
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderBy("id ASC")
     private Set<GamePlayer> gamePlayerSet = new LinkedHashSet<>();
@@ -33,10 +42,12 @@ public class Game {
 
     public Game() {
         this.creationDate = new Date();
+        this.status = Status.OPEN;
     }
 
     public Game(Date creationDate) {
         this.creationDate = creationDate;
+        this.status = Status.OPEN;
     }
 
 
@@ -72,8 +83,12 @@ public class Game {
         this.scoreSet.add(score);
     }
 
-    public boolean isFinished() {
-        return finished;
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public void finishGame(String winner) {
@@ -90,7 +105,7 @@ public class Game {
                 this.getScoreSet().forEach(score -> score.setResults(TIE));
                 break;
         }
-        this.finished = true;
+        this.setStatus(Status.FINISHED);
         this.setFinishDate(new Date());
     }
 
@@ -102,16 +117,16 @@ public class Game {
         this.finishDate = finishDate;
     }
 
-    private Player getWinner() {
+    public Player getWinner() {
         return this.scoreSet
-                .stream().filter(score -> score.getResults().score()==1)
+                .stream().filter(score -> score.getResults() == WIN)
                 .findFirst()
-                .orElse(null)
+                .orElse(new Score())
                 .getPlayer();
     }
 
     public String getResult() {
-        if(this.isFinished()) {
+        if(this.getStatus() == Status.FINISHED) {
             switch (this.getScoreSet()
                     .stream().findAny()
                     .orElse(new Score())
@@ -141,7 +156,7 @@ public class Game {
                 .orElse(null)
                 + ". ";
         message += this.getResult() + ".";
-        if (this.isFinished()) message += " Finished at " + this.finishDate
+        if (this.getStatus() == Status.FINISHED) message += " Finished at " + this.finishDate
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime()
