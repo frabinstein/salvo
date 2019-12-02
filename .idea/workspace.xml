@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="605d7c37-7cc6-4946-8130-90785d03a1d7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="605d7c37-7cc6-4946-8130-90785d03a1d7" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -250,10 +248,30 @@
     <option name="LAST_COMMIT_MESSAGE" value="Added game statuses&#10;Started work on game joining and creating" />
   </component>
   <component name="WindowStateProjectService">
+    <state width="778" height="181" key="GridCell.Tab.0.bottom" timestamp="1575249158388">
+      <screen x="-1600" y="-341" width="1600" height="900" />
+    </state>
+    <state width="778" height="181" key="GridCell.Tab.0.bottom/0.0.1366.738/-1600.-341.1600.900@-1600.-341.1600.900" timestamp="1575249158388" />
+    <state width="778" height="181" key="GridCell.Tab.0.center" timestamp="1575249158388">
+      <screen x="-1600" y="-341" width="1600" height="900" />
+    </state>
+    <state width="778" height="181" key="GridCell.Tab.0.center/0.0.1366.738/-1600.-341.1600.900@-1600.-341.1600.900" timestamp="1575249158388" />
+    <state width="778" height="181" key="GridCell.Tab.0.left" timestamp="1575249158388">
+      <screen x="-1600" y="-341" width="1600" height="900" />
+    </state>
+    <state width="778" height="181" key="GridCell.Tab.0.left/0.0.1366.738/-1600.-341.1600.900@-1600.-341.1600.900" timestamp="1575249158388" />
+    <state width="778" height="181" key="GridCell.Tab.0.right" timestamp="1575249158388">
+      <screen x="-1600" y="-341" width="1600" height="900" />
+    </state>
+    <state width="778" height="181" key="GridCell.Tab.0.right/0.0.1366.738/-1600.-341.1600.900@-1600.-341.1600.900" timestamp="1575249158388" />
     <state x="384" y="192" key="com.intellij.ide.util.TipDialog" timestamp="1575245926995">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="384" y="192" key="com.intellij.ide.util.TipDialog/0.0.1366.738/-1600.-341.1600.900@0.0.1366.738" timestamp="1575245926995" />
+    <state x="-991" y="25" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1575249148085">
+      <screen x="-1600" y="-341" width="1600" height="900" />
+    </state>
+    <state x="-991" y="25" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1366.738/-1600.-341.1600.900@-1600.-341.1600.900" timestamp="1575249148085" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/salvo$salvo__build_.ic" NAME="salvo [build] Coverage Results" MODIFIED="1572125014827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
