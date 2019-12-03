@@ -31,6 +31,8 @@ function main(json) {
     $(open).html(buildGamesTable("Open", openGames));
     $(ongoing).html(buildGamesTable("Ongoing", ongoingGames));
     $(finished).html(buildGamesTable("Finished", finishedGames));
+
+    getAuthentication();
 };
 
 
@@ -48,12 +50,20 @@ function buildGameRow(game) {
     switch(game.status) {
         case "open":
             content += "<b>" + game.gamePlayers[0].player.name + "</b> is waiting for an opponent";
-            content += "</td><td class='col3'></td></tr>";
+            content += "</td><td class='col3'><button type='button' class='join' hidden>Join game</button></td></tr>";
             break;
         case "not started":
         case "ongoing":
             content += "<b>" + game.gamePlayers.map(gamePlayer => gamePlayer.player.name).join("</b> vs. <b>") + "</b>";
-            content += "</td><td class='col3' players='" + game.gamePlayers.map(gamePlayer => "p"+gamePlayer.player.id).join(" ") + "'></td></tr>";
+            content += "</td><td class='col3'>"
+                + game.gamePlayers.map(gamePlayer =>
+                    "<button type='button' class='return' player='"
+                    + gamePlayer.player.id
+                    + "' onclick='redirectTo(\"/web/game.html?gp="
+                    + gamePlayer.id
+                    + "\")' hidden>Return to your game</button>")
+                    .join("")
+                + "</td></tr>";
             break;
         case "finished":
             content += "<b>" + game.gamePlayers.map(gamePlayer => gamePlayer.player.name).join("</b> vs. <b>") + "</b>";
@@ -64,12 +74,13 @@ function buildGameRow(game) {
     return content;
 }
 
-function getAuthentication(firstLine) {
+
+function getAuthentication() {
     $.getJSON(authentication, json => authenticatedUser = json)
         .done(function() {
-            buildHeader(firstLine);
+            buildHeader();
             if(!$.isEmptyObject(authenticatedUser))
-                addButtons();
+                showButtons();
         })
         .fail( function( textStatus, error) {
             console.log("Request Failed: " + JSON.stringify(textStatus));
@@ -77,10 +88,10 @@ function getAuthentication(firstLine) {
         });
 }
 
-function buildHeader(firstLine) {
+function buildHeader() {
     let content = "";
     if($.isEmptyObject(authenticatedUser)) {
-        content += "<p>" + firstLine + "</p>";
+        content += "<p>Welcome! Please login or sign up:</p>";
 
         content += "<div class='forms'>";
         content += "<form name='login-form' onsubmit='return false'>";
@@ -105,17 +116,18 @@ function buildHeader(firstLine) {
 
         content += "<div class='forms'>";
         content += "<form onsubmit='return false'>";
-        content += "<button id='logout'>Log out</button>";
+        content += "<button type='button' id='logout'>Log out</button>";
         content += "</form>";
         content += "</div>";
     }
     $("header").html(content);
 }
 
-function addButtons() {
-    $('#open .col3').html("<button class='join'>Join game</button>");
-    $('#ongoing .col3[players~="p'+authenticatedUser.id+'"]').html("<button class='return'>Return to your game</button>");
+function showButtons() {
+    $('#open .col3 .join').removeAttr("hidden");
+    $('#ongoing .col3 .return[player="'+authenticatedUser.id+'"]').removeAttr("hidden");
 }
+
 
 function trimField(form, field) {
     $('[name="'+form+'"] [name="'+field+'"]').val($('[name="'+form+'"] [name="'+field+'"]').val().trim());
@@ -155,6 +167,7 @@ function validateField(form, field) {
     return true;
 }
 
+
 function login(email, password) {
     $.post("/api/login", { "email": email, "password": password })
         .done(function() {
@@ -167,7 +180,7 @@ function logout() {
     $.post("/api/logout")
         .done(function() {
             getAuthentication("You have logged out successfully");
-            window.location.href = "/web/games.html";
+            redirectTo("/web/games.html");
         })
         .fail(function() { $("header").prepend("<p class='error'>Logout error!</p>"); })
 }
@@ -179,13 +192,17 @@ function signup(name, email, password) {
 }
 
 
+function redirectTo(target) {
+    window.location.href = target;
+
+}
+
+
 $.getJSON(uri, json => main(json))
     .fail( function( textStatus, error) {
         console.log("Request Failed: " + JSON.stringify(textStatus));
         console.log("Error: " + JSON.stringify(error));
     });
-
-getAuthentication("Welcome! Please login or sign up:");
 
 $('header').on('click', '#login', "login-form", function(event) {
     trimField(event.data, "email");
