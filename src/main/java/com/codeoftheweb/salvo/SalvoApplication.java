@@ -53,32 +53,25 @@ public class SalvoApplication extends SpringBootServletInitializer {
                 playerRepository.save(new Player(players[i][0], players[i][1], passwordEncoder.encode(players[i][2])));
             }
 
-            //Sample gamePlayers and games:
-                //(GamePlayer constructor creates score too)
+            //Sample games (gamePlayers and scores created automatically):
             Date date = new Date();
             String[][] gamePlayersPlayers = { {"j.bauer@ctu.gov","j.bauer@ctu.gov","c.obrian@ctu.gov","c.obrian@ctu.gov","t.almeida@ctu.gov","kim_bauer@gmail.com","t.almeida@ctu.gov","kim_bauer@gmail.com"}, {"c.obrian@ctu.gov","c.obrian@ctu.gov","t.almeida@ctu.gov","j.bauer@ctu.gov","j.bauer@ctu.gov","N/A","N/A","t.almeida@ctu.gov"} };
             for(int i = 0; i < gamePlayersPlayers[0].length; i++){
-                Game game = new Game(Date.from(date.toInstant().plusSeconds(3600 * i)));
-                gameRepository.save(game);
                 Player player1 = playerRepository
                         .findByEmail(gamePlayersPlayers[0][i]);
                 if(player1 != null) {
-                    GamePlayer gamePlayer1 = new GamePlayer(game, player1, game.getCreationDate());
-                    gamePlayerRepository.save(gamePlayer1);
+                    Game game = new Game(Date.from(date.toInstant().plusSeconds(3600 * i)), player1);
+                    gameRepository.save(game);
                     playerRepository.save(player1);
+                    Player player2 = playerRepository
+                            .findByEmail(gamePlayersPlayers[1][i]);
+                    if(player2 != null) {
+                        game.addPlayer(player2, Date.from(date.toInstant().plusSeconds(3600 * i)));
+                        game.setStatus(Game.Status.ONGOING);
+                        gameRepository.save(game);
+                        playerRepository.save(player2);
+                    }
                 }
-/*                    game.addScore(new Score(gamePlayer1));*/
-                Player player2 = playerRepository
-                        .findByEmail(gamePlayersPlayers[1][i]);
-                if(player2 != null) {
-                    GamePlayer gamePlayer2 = new GamePlayer(game, player2, game.getCreationDate());
-                    gamePlayerRepository.save(gamePlayer2);
-                    playerRepository.save(player2);
-                }
-/*                    game.addScore(new Score(gamePlayer2));*/
-                if(player1 != null && player2 != null)
-                    game.setStatus(Game.Status.ONGOING);
-                gameRepository.save(game);
             }
 
             //Sample ships:

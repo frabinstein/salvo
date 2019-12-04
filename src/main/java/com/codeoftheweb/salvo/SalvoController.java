@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -44,17 +45,24 @@ public class SalvoController {
     }
 
     @RequestMapping("/game_view/{gamePlayerId}")
-    public LinkedHashMap<String, Object> getGamePlayerData(@PathVariable long gamePlayerId) {
+    public ResponseEntity<LinkedHashMap<String, Object>> getGamePlayerData(@PathVariable long gamePlayerId) {
         GamePlayer gamePlayer = gamePlayerRepository
                 .findById(gamePlayerId)
                 .orElse(null);
-        LinkedHashMap<String, Object> content = createGameDTO(gamePlayer.getGame());
-        content.put("ships", gamePlayer.getShips()
+        LinkedHashMap<String, Object> content = new LinkedHashMap<>();
+        if(gamePlayer == null || gamePlayer.getPlayer().getId() != getCurrentlyLoggedInUser().getId()) {
+            content.put("error", "You are not authorized to view this page");
+            return new ResponseEntity<>(content, HttpStatus.UNAUTHORIZED);
+        }
+        else {
+            content = createGameDTO(gamePlayer.getGame());
+            content.put("ships", gamePlayer.getShips()
                 .stream().map(this::createShipDTO));
-        content.put("salvoes", gamePlayer.getGame()
+            content.put("salvoes", gamePlayer.getGame()
                 .getGamePlayerSet()
                 .stream().map(this::createGamePlayerSalvoesDTO));
-        return content;
+            return new ResponseEntity<>(content, HttpStatus.OK);
+        }
     }
 
     @RequestMapping("/leaderboard")
@@ -67,12 +75,7 @@ public class SalvoController {
 
     @RequestMapping("/authentication")
     public LinkedHashMap<String, Object> getAuthenticatedUser() {
-        LinkedHashMap<String, Object> authenticatedUser = new LinkedHashMap<>();
-        if(!isGuest(SecurityContextHolder.getContext().getAuthentication()))
-//            authenticatedUser.put("name", "Guest user");
-//        else
-            authenticatedUser = createPlayerDTO(getCurrentlyLoggedInUser(SecurityContextHolder.getContext().getAuthentication()));
-        return authenticatedUser;
+        return createPlayerDTO(getCurrentlyLoggedInUser());
     }
 
     @RequestMapping(path = "/players", method = RequestMethod.POST)
@@ -87,6 +90,23 @@ public class SalvoController {
             playerRepository.save(new Player(name, email, passwordEncoder.encode(password)));
             response.put("success", "New player created");
             response.putAll(createPlayerDTO(playerRepository.findByEmail(email)));
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+    }
+
+    @RequestMapping(path = "/games", method = RequestMethod.POST)
+    public ResponseEntity<LinkedHashMap<String, Object>> createGame() {
+        Player player = getCurrentlyLoggedInUser();
+        LinkedHashMap<String, Object> response = new LinkedHashMap<>();
+        if(getCurrentlyLoggedInUser().getId() == 0) {
+            response.put("error", "Please log in to create a new game");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        else {
+            Game game = new Game(new Date(), player);
+            gameRepository.save(game);
+            response.put("game_id", game.getId());
+            response.put("gamePlayer_id", game.getGamePlayerSet().stream().findFirst().get().getId());
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
     }
@@ -167,6 +187,14 @@ public class SalvoController {
         return dto;
     }
 
+    private Player getCurrentlyLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || authentication instanceof AnonymousAuthenticationToken)
+            return new Player();
+        else
+            return playerRepository.findByEmail(authentication.getName());
+    }
+/*
     private Player getCurrentlyLoggedInUser(Authentication authentication) {
         return playerRepository.findByEmail(authentication.getName());
     }
@@ -174,5 +202,5 @@ public class SalvoController {
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
-
+*/
 }

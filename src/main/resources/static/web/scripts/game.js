@@ -118,7 +118,4 @@ function populateSalvoes(salvoShots, tableClass){
 
 
 $.getJSON(uri, json => main(json))
-    .fail( function( textStatus, error) {
-        console.log("Request Failed: " + JSON.stringify(textStatus));
-        console.log("Error: " + JSON.stringify(error));
-    });
+    .fail( response => console.log("Request Failed: " + response.responseJSON.error) );

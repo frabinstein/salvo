@@ -21,6 +21,7 @@ public class Player {
     private String email;
 //    private final String userName;
     private String password;
+
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderBy("id ASC")
     private Set<GamePlayer> gamePlayerSet = new LinkedHashSet<>();
@@ -82,6 +83,7 @@ public class Player {
     }
 */
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

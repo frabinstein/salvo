@@ -17,6 +17,7 @@ public class GamePlayer {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
     final private Date joinedDate;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="player_id")
     private Player player;

@@ -45,8 +45,9 @@ public class Game {
         this.status = Status.OPEN;
     }
 
-    public Game(Date creationDate) {
+    public Game(Date creationDate, Player player) {
         this.creationDate = creationDate;
+        this.addPlayer(player, creationDate);
         this.status = Status.OPEN;
     }
 
@@ -63,8 +64,8 @@ public class Game {
         return this.gamePlayerSet;
     }
 
-    public void addGamePlayer(GamePlayer gamePlayer) {
-        gamePlayer.setGame(this);
+    public void addPlayer(Player player, Date joinedDate) {
+        GamePlayer gamePlayer = new GamePlayer(this, player, joinedDate);
         this.gamePlayerSet.add(gamePlayer);
     }
 

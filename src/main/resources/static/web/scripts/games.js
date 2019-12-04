@@ -1,5 +1,5 @@
 var authentication = "/api/authentication";
-var authenticatedUser = {};
+var authenticatedUser = { "id": 0 };
 
 var uri = "/api/games";
 
@@ -77,23 +77,20 @@ function buildGameRow(game) {
 
 function getAuthentication() {
     $.getJSON(authentication, json => authenticatedUser = json)
-        .done(function() {
+        .done( () => {
             buildHeader();
-            if(!$.isEmptyObject(authenticatedUser))
+            if(authenticatedUser.id != 0)
                 showButtons();
         })
-        .fail( function( textStatus, error) {
-            console.log("Request Failed: " + JSON.stringify(textStatus));
-            console.log("Error: " + JSON.stringify(error));
-        });
+        .fail( response => console.log("Request Failed: " + response.responseJSON.error) );
 }
 
 function buildHeader() {
     let content = "";
-    if($.isEmptyObject(authenticatedUser)) {
+    if( authenticatedUser.id == 0 ) {
         content += "<p>Welcome! Please login or sign up:</p>";
 
-        content += "<div class='forms'>";
+        content += "<div class='header'>";
         content += "<form name='login-form' onsubmit='return false'>";
         content += "<div class='warning'></div>";
         content += "<label>E-mail: <input type='text' name='email'></label>";
@@ -114,10 +111,9 @@ function buildHeader() {
     else {
         content += "<p>Hello " + authenticatedUser.name + "!</p>";
 
-        content += "<div class='forms'>";
-        content += "<form onsubmit='return false'>";
+        content += "<div class='header'>";
         content += "<button type='button' id='logout'>Log out</button>";
-        content += "</form>";
+        content += "<button type='button' id='create'>Create game</button>";
         content += "</div>";
     }
     $("header").html(content);
@@ -169,51 +165,50 @@ function validateField(form, field) {
 
 
 function login(email, password) {
-    $.post("/api/login", { "email": email, "password": password })
-        .done(function() {
-            getAuthentication("");
-        })
-        .fail(function() { $('[name="login-form"] .warning').html("<p><span class='error'>Login error!</span> Please check your credentials</p>"); })
+    $.post("/api/login", { "email": email, "password": password }, () => getAuthentication(""))
+        .fail( () => $('[name="login-form"] .warning').html("<p><span class='error'>Login error!</span> Please check your credentials</p>") );
 }
 
 function logout() {
-    $.post("/api/logout")
-        .done(function() {
-            getAuthentication("You have logged out successfully");
-            redirectTo("/web/games.html");
-        })
-        .fail(function() { $("header").prepend("<p class='error'>Logout error!</p>"); })
+    $.post("/api/logout", () => {
+        getAuthentication("You have logged out successfully");
+        redirectTo("/web/games.html");
+    })
+        .fail( () => $("header").prepend("<p class='error'>Logout error!</p>") );
 }
 
 function signup(name, email, password) {
-    $.post("/api/players", { "name": name, "email": email, "password": password } )
-        .done(function() { login(email, password); })
-        .fail(function(xhr) { $('[name="signup-form"] .warning').html("<p><span class='error'>There was an error:</span> " + xhr.responseJSON.error + ". Please try again.</p>"); })
+    $.post("/api/players", { "name": name, "email": email, "password": password }, () => login(email, password) )
+        .fail( response => $('[name="signup-form"] .warning').html("<p><span class='error'>There was an error:</span> " + response.responseJSON.error + ". Please try again.</p>") );
+}
+
+function createGame() {
+    $.post("/api/games", json => redirectTo("/web/game.html?gp=" + json.gamePlayer_id) )
+        .fail( response => alert("Request Failed: " + response.responseJSON.error) );
 }
 
 
-function redirectTo(target) {
-    window.location.href = target;
+function redirectTo(target)   {
+    location.href = target;
 
 }
 
 
 $.getJSON(uri, json => main(json))
-    .fail( function( textStatus, error) {
-        console.log("Request Failed: " + JSON.stringify(textStatus));
-        console.log("Error: " + JSON.stringify(error));
-    });
+    .fail( response => console.log("Request Failed: " + response.responseJSON.error) );
 
-$('header').on('click', '#login', "login-form", function(event) {
+$('header').on('click', '#login', "login-form", event => {
     trimField(event.data, "email");
     if(validateForm(event.data))
         login($('[name="'+event.data+'"] [name="email"]').val(), $('[name="'+event.data+'"] [name="password"]').val())
 });
 
-$('header').on('click', '#signup', "signup-form", function(event) {
+$('header').on('click', '#signup', "signup-form", event => {
     trimField(event.data, "email");
     if(validateForm(event.data))
         signup($('[name="'+event.data+'"] [name="name"]').val(), $('[name="'+event.data+'"] [name="email"]').val(), $('[name="'+event.data+'"] [name="password"]').val())
 });
 
-$('header').on('click', '#logout', function() { logout() });
+$('header').on('click', '#logout', () => logout() );
+
+$('header').on('click', '#create', () => createGame() );
