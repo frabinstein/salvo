@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
@@ -98,7 +99,7 @@ public class SalvoController {
     public ResponseEntity<LinkedHashMap<String, Object>> createGame() {
         Player player = getCurrentlyLoggedInUser();
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
-        if(getCurrentlyLoggedInUser().getId() == 0) {
+        if(player.getId() == 0) {
             response.put("error", "Please log in to create a new game");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
@@ -107,6 +108,38 @@ public class SalvoController {
             gameRepository.save(game);
             response.put("game_id", game.getId());
             response.put("gamePlayer_id", game.getGamePlayerSet().stream().findFirst().get().getId());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+    }
+
+    @RequestMapping(path = "/game/{gameId}/players", method = RequestMethod.POST)
+    public ResponseEntity<LinkedHashMap<String, Object>> joinGame(@PathVariable long gameId) {
+        Player player = getCurrentlyLoggedInUser();
+        Game game = gameRepository
+                .findById(gameId)
+                .orElse(null);
+        LinkedHashMap<String, Object> response = new LinkedHashMap<>();
+        if(player.getId() == 0) {
+            response.put("error", "Please log in to join a game");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+        else if(game == null) {
+            response.put("error", "The requested game does not exist");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+        else if(game.getStatus() == Game.Status.ONGOING) {
+            response.put("error", "The requested game is already full");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+        else if(game.getStatus() == Game.Status.FINISHED) {
+            response.put("error", "The requested game has already ended");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+        else {
+            game.addPlayer(player, new Date());
+            gameRepository.save(game);
+            playerRepository.save(player);
+            response.put("gamePlayer_id", game.getGamePlayerSet().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() == player.getId()).collect(toList()).get(0).getId());
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
     }

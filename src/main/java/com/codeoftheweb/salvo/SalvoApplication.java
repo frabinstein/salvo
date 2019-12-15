@@ -190,7 +190,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/**").hasAuthority("ADMIN")
 //                .antMatchers("/api/players").anonymous()
                 .antMatchers("/api/authentication", "/api/login", "/api/logout", "/api/players").permitAll()
-                .antMatchers("/web/games.html", "/api/games", "/web/leaderboard.html", "/api/leaderboard", "/web/styles/**", "/web/scripts/**", "/favicon.ico").permitAll()
+                .antMatchers("/web/games.html", "/api/games", "/api/game/**", "/web/leaderboard.html", "/api/leaderboard", "/web/styles/**", "/web/scripts/**", "/favicon.ico").permitAll()
 //                .antMatchers("/rest/**").denyAll()
                 .antMatchers("/**").authenticated();
 //                .anyRequest().denyAll();

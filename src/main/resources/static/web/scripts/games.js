@@ -50,18 +50,18 @@ function buildGameRow(game) {
   switch(game.status) {
     case "open":
       content += "<b>" + game.gamePlayers[0].player.name + "</b> is waiting for an opponent";
-      content += "</td><td class='col3'><button type='button' class='join' hidden>Join game</button></td></tr>";
+      content += "</td><td class='col3'><button type='button' class='join' onclick='joinGame("
+        + game.id
+        + ")' hidden>Join game</button></td></tr>";
       break;
     case "not started":
     case "ongoing":
       content += "<b>" + game.gamePlayers.map(gamePlayer => gamePlayer.player.name).join("</b> vs. <b>") + "</b>";
       content += "</td><td class='col3'>"
         + game.gamePlayers.map(gamePlayer =>
-          "<button type='button' class='return' player='"
+          "<button type='button' class='return' p='"
           + gamePlayer.player.id
-          + "' onclick='redirectTo(\"/web/game.html?gp="
-          + gamePlayer.id
-          + "\")' hidden>Return to your game</button>")
+          + "' onclick='returnToGame(" + gamePlayer.id + ")' hidden>Return to your game</button>")
           .join("")
         + "</td></tr>";
       break;
@@ -121,7 +121,7 @@ function buildHeader() {
 
 function showButtons() {
   $('#open .col3 .join').removeAttr("hidden");
-  $('#ongoing .col3 .return[player="'+authenticatedUser.id+'"]').removeAttr("hidden");
+  $('#ongoing .col3 .return[p="'+authenticatedUser.id+'"]').removeAttr("hidden");
 }
 
 
@@ -184,6 +184,16 @@ function signup(name, email, password) {
 
 function createGame() {
   $.post("/api/games", json => redirectTo("/web/game.html?gp=" + json.gamePlayer_id) )
+    .fail( response => alert("Request Failed: " + response.responseJSON.error) );
+}
+
+function returnToGame(gamePlayer_id) {
+  redirectTo("/web/game.html?gp=" + gamePlayer_id);
+
+}
+
+function joinGame(game_id) {
+  $.post("/api/game/" + game_id + "/players", json => redirectTo("/web/game.html?gp=" + json.gamePlayer_id) )
     .fail( response => alert("Request Failed: " + response.responseJSON.error) );
 }
 

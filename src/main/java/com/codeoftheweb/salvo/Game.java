@@ -67,6 +67,7 @@ public class Game {
     public void addPlayer(Player player, Date joinedDate) {
         GamePlayer gamePlayer = new GamePlayer(this, player, joinedDate);
         this.gamePlayerSet.add(gamePlayer);
+        this.status = Status.ONGOING;
     }
 
     public LinkedHashSet<Player> getPlayers() {
